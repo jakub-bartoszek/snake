@@ -10,8 +10,8 @@ interface Snake {
  y: number;
 }
 
-const BOARD_SIZE = 10;
-const INITIAL_SNAKE: Snake[] = [{ x: 5, y: 5 }];
+const BOARD_SIZE = 9;
+const INITIAL_SNAKE: Snake[] = [{ x: 4, y: 4 }];
 
 const Game = () => {
  const generateFruit = (): Fruit => {
