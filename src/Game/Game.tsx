@@ -1,57 +1,110 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+
+interface Fruit {
+ x: number;
+ y: number;
+}
+
+interface Snake {
+ x: number;
+ y: number;
+}
 
 const BOARD_SIZE = 10;
-const INITIAL_SNAKE = [
- { x: 5, y: 5 },
- { x: 6, y: 5 },
- { x: 7, y: 5 }
-];
+const INITIAL_SNAKE: Snake[] = [{ x: 5, y: 5 }];
 
 const Game = () => {
- const [snakeCells, setSnakeCells] = useState(INITIAL_SNAKE);
- const [direction, setDirection] = useState<String | null>(null);
- const [gameOver, setGameOver] = useState(false);
+ const generateFruit = (): Fruit => {
+  let newFruit: Fruit;
+  const isOccupied = (fruit: Fruit) =>
+   snake.some((cell) => cell.x === fruit.x && cell.y === fruit.y);
 
- const handleKeyDown = (event: any) => {
-  if (!gameOver) {
-   switch (event.key) {
-    case "ArrowUp":
-     if (direction !== "down") setDirection("up");
-     break;
-    case "ArrowDown":
-     if (direction !== "up") setDirection("down");
-     break;
-    case "ArrowLeft":
-     if (direction !== "right") setDirection("left");
-     break;
-    case "ArrowRight":
-     if (direction !== "left") setDirection("right");
-     break;
-    default:
-     break;
-   }
-  }
+  do {
+   newFruit = {
+    x: Math.floor(Math.random() * BOARD_SIZE),
+    y: Math.floor(Math.random() * BOARD_SIZE)
+   };
+  } while (isOccupied(newFruit));
+
+  return newFruit;
  };
 
- const moveSnake = () => {
-  if (!direction && gameOver) return;
+ const [snake, setSnake] = useState<Snake[]>(INITIAL_SNAKE);
+ const [fruit, setFruit] = useState<Fruit>(generateFruit());
+ const [gameOver, setGameOver] = useState(false);
+ const [pending, setPending] = useState(false);
+ const directionRef = useRef<string | null>(null);
+ const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  setSnakeCells((prevSnake) => {
+ const handleKeyDown = useCallback(
+  (event: KeyboardEvent) => {
+   if (!gameOver && !pending) {
+    setPending(true);
+    switch (event.key) {
+     case "ArrowUp":
+      if (directionRef.current !== "down") {
+       directionRef.current = "up";
+      }
+      break;
+     case "ArrowDown":
+      if (directionRef.current !== "up") {
+       directionRef.current = "down";
+      }
+      break;
+     case "ArrowLeft":
+      if (directionRef.current !== "right") {
+       directionRef.current = "left";
+      }
+      break;
+     case "ArrowRight":
+      if (directionRef.current !== "left") {
+       directionRef.current = "right";
+      }
+      break;
+     default:
+      break;
+    }
+   }
+  },
+  [gameOver, pending]
+ );
+
+ useEffect(() => {
+  window.addEventListener("keydown", handleKeyDown);
+
+  return () => {
+   window.removeEventListener("keydown", handleKeyDown);
+  };
+ }, [handleKeyDown]);
+
+ useEffect(() => {
+  if (!gameOver) {
+   intervalRef.current = setInterval(moveSnake, 300);
+
+   return () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+   };
+  }
+ }, [gameOver]);
+
+ const moveSnake = () => {
+  setSnake((prevSnake) => {
    const newSnake = [...prevSnake];
    const head = { ...newSnake[0] };
+   const currentDirection = directionRef.current;
 
-   switch (direction) {
+   switch (currentDirection) {
     case "up":
-     head.y = head.y - 1;
+     head.y -= 1;
      break;
     case "down":
-     head.y = head.y + 1;
+     head.y += 1;
      break;
     case "left":
-     head.x = head.x - 1;
+     head.x -= 1;
      break;
     case "right":
-     head.x = head.x + 1;
+     head.x += 1;
      break;
     default:
      break;
@@ -69,29 +122,36 @@ const Game = () => {
 
    newSnake.unshift(head);
    newSnake.pop();
+
+   if (
+    newSnake
+     .slice(1)
+     .some((cell) => cell.x === head.x && cell.y === head.y)
+   ) {
+    setGameOver(true);
+    return prevSnake;
+   }
+
+   setPending(false);
    return newSnake;
   });
  };
 
  useEffect(() => {
-  window.addEventListener("keydown", handleKeyDown);
+  const head = snake[0];
 
-  return () => {
-   window.removeEventListener("keydown", handleKeyDown);
-  };
- }, [direction]);
-
- useEffect(() => {
-  if (direction && !gameOver) {
-   const interval = setInterval(moveSnake, 500);
-   return () => clearInterval(interval);
+  if (head.y === fruit.y && head.x === fruit.x) {
+   setSnake((prevSnake) => [...prevSnake, fruit]);
+   setFruit(generateFruit());
   }
- }, [direction]);
+ }, [snake, fruit]);
 
  const restartGame = () => {
-  setSnakeCells(INITIAL_SNAKE);
-  setDirection(null);
+  setSnake(INITIAL_SNAKE);
   setGameOver(false);
+  setFruit(generateFruit());
+  directionRef.current = null;
+  if (intervalRef.current) clearInterval(intervalRef.current);
  };
 
  return (
@@ -112,15 +172,17 @@ const Game = () => {
      className="flex justify-center"
     >
      {Array.from({ length: BOARD_SIZE }).map((_, col) => {
-      const isSnakeCell = snakeCells.some(
+      const isSnakeCell = snake.some(
        (cell) => cell.x === col && cell.y === row
       );
+      const isFruitCell = fruit.x === col && fruit.y === row;
+
       return (
        <div
         key={col}
         className={`h-6 w-6 border-[1px] border-black ${
          isSnakeCell ? "bg-green-500" : ""
-        }`}
+        } ${isFruitCell ? "bg-red-500" : ""}`}
        ></div>
       );
      })}
