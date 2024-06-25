@@ -14,28 +14,17 @@ const BOARD_SIZE = 9;
 const INITIAL_SNAKE: Snake[] = [{ x: 4, y: 4 }];
 
 const Game = () => {
- const generateFruit = (): Fruit => {
-  let newFruit: Fruit;
-  const isOccupied = (fruit: Fruit) =>
-   snake.some((cell) => cell.x === fruit.x && cell.y === fruit.y);
-
-  do {
-   newFruit = {
-    x: Math.floor(Math.random() * BOARD_SIZE),
-    y: Math.floor(Math.random() * BOARD_SIZE)
-   };
-  } while (isOccupied(newFruit));
-
-  return newFruit;
- };
-
  const [snake, setSnake] = useState<Snake[]>(INITIAL_SNAKE);
- const [fruit, setFruit] = useState<Fruit>(generateFruit());
+ const [fruit, setFruit] = useState<Fruit>({
+  x: Math.floor(Math.random() * BOARD_SIZE),
+  y: Math.floor(Math.random() * BOARD_SIZE)
+ });
  const [gameOver, setGameOver] = useState(false);
  const [pending, setPending] = useState(false);
  const directionRef = useRef<string | null>(null);
  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+ // Changing direction
  const handleKeyDown = useCallback(
   (event: KeyboardEvent) => {
    if (!gameOver && !pending) {
@@ -69,6 +58,7 @@ const Game = () => {
   [gameOver, pending]
  );
 
+ // Listening for keydown events
  useEffect(() => {
   window.addEventListener("keydown", handleKeyDown);
 
@@ -77,6 +67,7 @@ const Game = () => {
   };
  }, [handleKeyDown]);
 
+ // Interval for moving snake
  useEffect(() => {
   if (!gameOver) {
    intervalRef.current = setInterval(moveSnake, 300);
@@ -87,6 +78,7 @@ const Game = () => {
   }
  }, [gameOver]);
 
+ // Moving snake logic
  const moveSnake = () => {
   setSnake((prevSnake) => {
    const newSnake = [...prevSnake];
@@ -137,6 +129,7 @@ const Game = () => {
   });
  };
 
+ // Snake eating fruit logic
  useEffect(() => {
   const head = snake[0];
 
@@ -146,6 +139,23 @@ const Game = () => {
   }
  }, [snake, fruit]);
 
+ // Generating new fruit
+ const generateFruit = (): Fruit => {
+  let newFruit: Fruit;
+  const isOccupied = (fruit: Fruit) =>
+   snake.some((cell) => cell.x === fruit.x && cell.y === fruit.y);
+
+  do {
+   newFruit = {
+    x: Math.floor(Math.random() * BOARD_SIZE),
+    y: Math.floor(Math.random() * BOARD_SIZE)
+   };
+  } while (isOccupied(newFruit));
+
+  return newFruit;
+ };
+
+ // Restart game
  const restartGame = () => {
   setSnake(INITIAL_SNAKE);
   setGameOver(false);
@@ -172,18 +182,19 @@ const Game = () => {
      className="flex justify-center"
     >
      {Array.from({ length: BOARD_SIZE }).map((_, col) => {
+      const isSnakeHead = snake[0].x === col && snake[0].y === row;
       const isSnakeCell = snake.some(
        (cell) => cell.x === col && cell.y === row
       );
       const isFruitCell = fruit.x === col && fruit.y === row;
-
       return (
        <div
         key={col}
-        className={`h-6 w-6 border-[1px] border-black ${
-         isSnakeCell ? "bg-green-500" : ""
-        } ${isFruitCell ? "bg-red-500" : ""}`}
-       ></div>
+        className={`h-6 w-6 border-[1px] border-black
+          ${isSnakeCell ? "bg-green-500" : ""}
+          ${isFruitCell ? "bg-red-500" : ""}
+          ${isSnakeHead ? "bg-yellow-500" : ""}`}
+       />
       );
      })}
     </div>
