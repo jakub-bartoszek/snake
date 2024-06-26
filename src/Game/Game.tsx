@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { twMerge } from "tailwind-merge";
+import { MdOutlineSpaceBar } from "react-icons/md";
 import {
  FaLongArrowAltDown,
  FaLongArrowAltLeft,
@@ -76,6 +77,13 @@ const Game = () => {
       default:
        break;
      }
+    }
+   }
+
+   // Handle spacebar for restarting the game
+   if (event.key === " ") {
+    if (gameOver) {
+     restartGame();
     }
    }
   },
@@ -196,16 +204,19 @@ const Game = () => {
   <div className="flex flex-col items-center shadow-[0_0_200px_#00000080] rounded-xl">
    <div className="text-white text-3xl font-bold p-2">{points}</div>
    <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900 rounded-md overflow-hidden">
+    {/* Game over */}
     {gameOver && (
-     <div className="absolute w-full h-full bg-black/50 flex items-center justify-center">
-      <button
-       onClick={restartGame}
-       className="border-2 border-white py-2 px-4 rounded-full text-white font-bold text-xl"
-      >
-       Try again
-      </button>
+     <div className="absolute w-full h-full bg-black/60 flex flex-col items-center justify-evenly text-white">
+      <h1 className="text-3xl font-bold">Game Over!</h1>
+      <div className="flex flex-col gap-2 items-center">
+       <div className="border-2 border-white h-10 w-32 rounded-xl">
+        <MdOutlineSpaceBar className="w-full h-full" />
+       </div>
+       Press spacebar to resume
+      </div>
      </div>
     )}
+    {/* Game paused */}
     {pause && !gameOver && (
      <div className="absolute w-full h-full bg-black/60 flex flex-col items-center justify-evenly text-white">
       <h1 className="text-3xl font-bold">Game Paused!</h1>
