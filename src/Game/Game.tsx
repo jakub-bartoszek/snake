@@ -195,7 +195,7 @@ const Game = () => {
  return (
   <div className="flex flex-col items-center shadow-[0_0_200px_#00000080] rounded-xl">
    <div className="text-white text-3xl font-bold p-2">{points}</div>
-   <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900 rounded-xl overflow-hidden">
+   <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900 rounded-md overflow-hidden">
     {gameOver && (
      <div className="absolute w-full h-full bg-black/50 flex items-center justify-center">
       <button
