@@ -162,7 +162,7 @@ const Game = () => {
   setSnake(INITIAL_SNAKE);
   setGameOver(false);
   setFruit(generateFruit());
-  setPoints(0)
+  setPoints(0);
   directionRef.current = null;
   if (intervalRef.current) clearInterval(intervalRef.current);
  };
@@ -200,13 +200,13 @@ const Game = () => {
         >
          <div
           className={twMerge(
-           "h-full w-full rounded-md",
+           "h-full w-full rounded-md transition-all",
            isSnakeCell &&
-            "bg-gradient-radial from-green-500 to-green-600",
+            "bg-gradient-radial from-green-500 to-green-600 shadow-[0_0_10px_#00000050]",
            isSnakeHead &&
-            "bg-gradient-radial from-yellow-500 to-yellow-600",
+            "bg-gradient-radial from-green-300 to-green-400 shadow-[0_0_10px_#00000050]",
            isFruitCell &&
-            "bg-gradient-radial from-red-500 to-red-600 rounded-xl"
+            "bg-gradient-radial from-red-400 to-red-700 rounded-xl shadow-[0_0_30px_5px_red]"
           )}
          ></div>
         </div>
