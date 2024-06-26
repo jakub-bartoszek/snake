@@ -22,6 +22,7 @@ const Game = () => {
  });
  const [gameOver, setGameOver] = useState(false);
  const [pending, setPending] = useState(false);
+ const [points, setPoints] = useState(0);
  const directionRef = useRef<string | null>(null);
  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -133,10 +134,10 @@ const Game = () => {
  // Snake eating fruit logic
  useEffect(() => {
   const head = snake[0];
-
   if (head.y === fruit.y && head.x === fruit.x) {
    setSnake((prevSnake) => [...prevSnake, fruit]);
    setFruit(generateFruit());
+   setPoints((points) => points + 1);
   }
  }, [snake, fruit]);
 
@@ -161,55 +162,59 @@ const Game = () => {
   setSnake(INITIAL_SNAKE);
   setGameOver(false);
   setFruit(generateFruit());
+  setPoints(0)
   directionRef.current = null;
   if (intervalRef.current) clearInterval(intervalRef.current);
  };
 
  return (
-  <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900">
-   {gameOver && (
-    <div className="absolute w-full h-full bg-black/50 flex items-center justify-center">
-     <button
-      onClick={restartGame}
-      className="border-2 border-white py-2 px-4 rounded-full text-white font-bold text-xl"
+  <div className="flex flex-col items-center">
+   <div className="text-white text-3xl font-bold">{points}</div>
+   <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900">
+    {gameOver && (
+     <div className="absolute w-full h-full bg-black/50 flex items-center justify-center">
+      <button
+       onClick={restartGame}
+       className="border-2 border-white py-2 px-4 rounded-full text-white font-bold text-xl"
+      >
+       Try again
+      </button>
+     </div>
+    )}
+    {Array.from({ length: BOARD_SIZE }).map((_, row) => (
+     <div
+      key={row}
+      className="flex justify-center"
      >
-      Try again
-     </button>
-    </div>
-   )}
-   {Array.from({ length: BOARD_SIZE }).map((_, row) => (
-    <div
-     key={row}
-     className="flex justify-center"
-    >
-     {Array.from({ length: BOARD_SIZE }).map((_, col) => {
-      const isSnakeHead = snake[0].x === col && snake[0].y === row;
-      const isSnakeCell = snake.some(
-       (cell) => cell.x === col && cell.y === row
-      );
-      const isFruitCell = fruit.x === col && fruit.y === row;
-      const evenBlock = (row + col) % 2 === 0;
-      return (
-       <div
-        className={twMerge("h-8 w-8", evenBlock && "bg-black/20")}
-        key={col}
-       >
+      {Array.from({ length: BOARD_SIZE }).map((_, col) => {
+       const isSnakeHead = snake[0].x === col && snake[0].y === row;
+       const isSnakeCell = snake.some(
+        (cell) => cell.x === col && cell.y === row
+       );
+       const isFruitCell = fruit.x === col && fruit.y === row;
+       const evenBlock = (row + col) % 2 === 0;
+       return (
         <div
-         className={twMerge(
-          "h-full w-full rounded-md",
-          isSnakeCell &&
-           "bg-gradient-radial from-green-500 to-green-600",
-          isSnakeHead &&
-           "bg-gradient-radial from-yellow-500 to-yellow-600",
-          isFruitCell &&
-           "bg-gradient-radial from-red-500 to-red-600 rounded-xl"
-         )}
-        ></div>
-       </div>
-      );
-     })}
-    </div>
-   ))}
+         className={twMerge("h-8 w-8", evenBlock && "bg-black/20")}
+         key={col}
+        >
+         <div
+          className={twMerge(
+           "h-full w-full rounded-md",
+           isSnakeCell &&
+            "bg-gradient-radial from-green-500 to-green-600",
+           isSnakeHead &&
+            "bg-gradient-radial from-yellow-500 to-yellow-600",
+           isFruitCell &&
+            "bg-gradient-radial from-red-500 to-red-600 rounded-xl"
+          )}
+         ></div>
+        </div>
+       );
+      })}
+     </div>
+    ))}
+   </div>
   </div>
  );
 };
