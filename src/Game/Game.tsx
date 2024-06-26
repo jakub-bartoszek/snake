@@ -34,7 +34,7 @@ const Game = () => {
  const directionRef = useRef<string | null>(null);
  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
- // Changing direction
+ // Key binding
  const handleKeyDown = useCallback(
   (event: KeyboardEvent) => {
    if (event.key === "p" || event.key === "P") {
