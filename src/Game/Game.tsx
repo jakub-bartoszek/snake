@@ -1,5 +1,11 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { twMerge } from "tailwind-merge";
+import {
+ FaLongArrowAltDown,
+ FaLongArrowAltLeft,
+ FaLongArrowAltRight,
+ FaLongArrowAltUp
+} from "react-icons/fa";
 
 interface Fruit {
  x: number;
@@ -23,41 +29,57 @@ const Game = () => {
  const [gameOver, setGameOver] = useState(false);
  const [pending, setPending] = useState(false);
  const [points, setPoints] = useState(0);
+ const [pause, setPause] = useState(false);
  const directionRef = useRef<string | null>(null);
  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
  // Changing direction
  const handleKeyDown = useCallback(
   (event: KeyboardEvent) => {
-   if (!gameOver && !pending) {
-    setPending(true);
-    switch (event.key) {
-     case "ArrowUp":
-      if (directionRef.current !== "down") {
-       directionRef.current = "up";
-      }
-      break;
-     case "ArrowDown":
-      if (directionRef.current !== "up") {
-       directionRef.current = "down";
-      }
-      break;
-     case "ArrowLeft":
-      if (directionRef.current !== "right") {
-       directionRef.current = "left";
-      }
-      break;
-     case "ArrowRight":
-      if (directionRef.current !== "left") {
-       directionRef.current = "right";
-      }
-      break;
-     default:
-      break;
+   if (event.key === "p" || event.key === "P") {
+    setPause((prevPause) => !prevPause);
+    return;
+   }
+
+   if (
+    ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
+     event.key
+    )
+   ) {
+    if (pause) {
+     setPause(false);
+    }
+
+    if (!gameOver && !pending) {
+     setPending(true);
+     switch (event.key) {
+      case "ArrowUp":
+       if (directionRef.current !== "down") {
+        directionRef.current = "up";
+       }
+       break;
+      case "ArrowDown":
+       if (directionRef.current !== "up") {
+        directionRef.current = "down";
+       }
+       break;
+      case "ArrowLeft":
+       if (directionRef.current !== "right") {
+        directionRef.current = "left";
+       }
+       break;
+      case "ArrowRight":
+       if (directionRef.current !== "left") {
+        directionRef.current = "right";
+       }
+       break;
+      default:
+       break;
+     }
     }
    }
   },
-  [gameOver, pending]
+  [gameOver, pause, pending]
  );
 
  // Listening for keydown events
@@ -71,14 +93,16 @@ const Game = () => {
 
  // Interval for moving snake
  useEffect(() => {
-  if (!gameOver) {
+  if (!gameOver && !pause) {
    intervalRef.current = setInterval(moveSnake, 300);
 
    return () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
    };
+  } else if (pause) {
+   if (intervalRef.current) clearInterval(intervalRef.current);
   }
- }, [gameOver]);
+ }, [gameOver, pause]);
 
  // Moving snake logic
  const moveSnake = () => {
@@ -165,6 +189,7 @@ const Game = () => {
   setPoints(0);
   directionRef.current = null;
   if (intervalRef.current) clearInterval(intervalRef.current);
+  setPause(false);
  };
 
  return (
@@ -179,6 +204,28 @@ const Game = () => {
       >
        Try again
       </button>
+     </div>
+    )}
+    {pause && !gameOver && (
+     <div className="absolute w-full h-full bg-black/60 flex flex-col items-center justify-evenly text-white">
+      <h1 className="text-3xl font-bold">Game Paused!</h1>
+      <div className="flex flex-col gap-2 items-center">
+       <div className="border-2 border-white h-10 w-10 p-2 rounded-xl">
+        <FaLongArrowAltUp className="w-full h-full" />
+       </div>
+       <div className="flex gap-2">
+        <div className="border-2 border-white h-10 w-10 p-2 rounded-xl">
+         <FaLongArrowAltLeft className="w-full h-full" />
+        </div>
+        <div className="border-2 border-white h-10 w-10 p-2 rounded-xl">
+         <FaLongArrowAltDown className="w-full h-full" />
+        </div>
+        <div className="border-2 border-white h-10 w-10 p-2 rounded-xl">
+         <FaLongArrowAltRight className="w-full h-full" />
+        </div>
+       </div>
+       Press any key to resume
+      </div>
      </div>
     )}
     {Array.from({ length: BOARD_SIZE }).map((_, row) => (
