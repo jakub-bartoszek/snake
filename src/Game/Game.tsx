@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
+import { twMerge } from "tailwind-merge";
 
 interface Fruit {
  x: number;
@@ -10,8 +11,8 @@ interface Snake {
  y: number;
 }
 
-const BOARD_SIZE = 9;
-const INITIAL_SNAKE: Snake[] = [{ x: 4, y: 4 }];
+const BOARD_SIZE = 11;
+const INITIAL_SNAKE: Snake[] = [{ x: 5, y: 5 }];
 
 const Game = () => {
  const [snake, setSnake] = useState<Snake[]>(INITIAL_SNAKE);
@@ -165,7 +166,7 @@ const Game = () => {
  };
 
  return (
-  <div className="bg-black/30 border-[1px] border-black relative">
+  <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900">
    {gameOver && (
     <div className="absolute w-full h-full bg-black/50 flex items-center justify-center">
      <button
@@ -187,14 +188,24 @@ const Game = () => {
        (cell) => cell.x === col && cell.y === row
       );
       const isFruitCell = fruit.x === col && fruit.y === row;
+      const evenBlock = (row + col) % 2 === 0;
       return (
        <div
+        className={twMerge("h-8 w-8", evenBlock && "bg-black/20")}
         key={col}
-        className={`h-6 w-6 border-[1px] border-black
-          ${isSnakeCell ? "bg-green-500" : ""}
-          ${isFruitCell ? "bg-red-500" : ""}
-          ${isSnakeHead ? "bg-yellow-500" : ""}`}
-       />
+       >
+        <div
+         className={twMerge(
+          "h-full w-full rounded-md",
+          isSnakeCell &&
+           "bg-gradient-radial from-green-500 to-green-600",
+          isSnakeHead &&
+           "bg-gradient-radial from-yellow-500 to-yellow-600",
+          isFruitCell &&
+           "bg-gradient-radial from-red-500 to-red-600 rounded-xl"
+         )}
+        ></div>
+       </div>
       );
      })}
     </div>
