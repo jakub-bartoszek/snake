@@ -239,6 +239,7 @@ const Game = () => {
       </div>
      </div>
     )}
+    {/* Game resumed */}
     {Array.from({ length: BOARD_SIZE }).map((_, row) => (
      <div
       key={row}
