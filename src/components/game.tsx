@@ -40,7 +40,7 @@ const Game = () => {
 
  return (
   <div className="flex flex-col items-center shadow-[0_0_200px_#00000080] rounded-xl">
-   <div className="flex justify-between items-center w-full py-2 px-4 relative">
+   <div className="flex justify-between items-center w-full p-2 relative">
     <DropDownList
      gameResumed={!!(directionRef.current || pause || gameOver)}
      currentOption={snakeSpeed.label}
