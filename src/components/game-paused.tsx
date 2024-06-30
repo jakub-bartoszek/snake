@@ -19,7 +19,7 @@ const GamePaused = () => {
       <FaLongArrowAltRight className="w-full h-full" />
      </div>
     </div>
-    Press any key to resume
+    Press any direction to resume
    </div>
   </div>
  );
