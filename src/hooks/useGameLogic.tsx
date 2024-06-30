@@ -30,6 +30,7 @@ const useGameLogic = ({
   y: Math.floor(Math.random() * boardSizeValue)
  });
  const [gameOver, setGameOver] = useState(false);
+ const [gameFinished, setGameFinished] = useState(false);
  const [pause, setPause] = useState(false);
  const [points, setPoints] = useState(0);
  const directionQueue = useRef<string[]>([]);
@@ -156,7 +157,7 @@ const useGameLogic = ({
     !["up", "down", "left", "right"].includes(newDirection)
    ) {
     if (event.key === " ") {
-     if (gameOver) restartGame();
+     if (gameOver || gameFinished) restartGame();
     }
     return;
    }
@@ -192,6 +193,7 @@ const useGameLogic = ({
    }
   ]);
   setGameOver(false);
+  setGameFinished(false);
   setFruit(generateFruit(boardSizeValue, snake));
   setPoints(0);
   directionRef.current = null;
@@ -205,7 +207,13 @@ const useGameLogic = ({
  useEffect(() => {
   const head = snake[0];
   if (head?.x === fruit.x && head?.y === fruit.y) {
-   setSnake((prevSnake) => [...prevSnake, fruit]);
+   setSnake((prevSnake) => {
+    const newSnake = [...prevSnake, fruit];
+    if (newSnake.length === boardSizeValue * boardSizeValue) {
+     setGameFinished(true);
+    }
+    return newSnake;
+   });
    setFruit(generateFruit(boardSizeValue, snake));
    setPoints(points + 1);
   }
@@ -216,6 +224,7 @@ const useGameLogic = ({
   snake,
   fruit,
   gameOver,
+  gameFinished,
   pause,
   points,
   restartGame,

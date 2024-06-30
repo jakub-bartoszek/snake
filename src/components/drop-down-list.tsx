@@ -38,7 +38,7 @@ const DropDownList = ({
  }, []);
 
  const handleShowOptions = () => {
-  if (gameResumed) return;
+  if (!gameResumed) return;
   setShown((shown) => !shown);
  };
 
@@ -49,14 +49,14 @@ const DropDownList = ({
    onClick={handleShowOptions}
    className={twMerge(
     "relative text-white font-bold cursor-pointer focus-visible:outline-none",
-    gameResumed && "cursor-not-allowed text-gray-400"
+    !gameResumed && "cursor-not-allowed text-gray-400"
    )}
   >
    <div
     className={twMerge(
      "bg-black/50 py-2 w-24 text-center rounded-[20px] transition-all hover:bg-black/70",
      shown && "rounded-[20px_20px_0_0]",
-     gameResumed && "hover:bg-black/50"
+     !gameResumed && "hover:bg-black/50"
     )}
    >
     {currentOption}

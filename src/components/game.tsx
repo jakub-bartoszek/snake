@@ -3,6 +3,7 @@ import useGameLogic from "../hooks/useGameLogic";
 import DropDownList from "./drop-down-list";
 import GamePaused from "./game-paused";
 import GameOver from "./game-over";
+import GameFinished from "./game-finished";
 import Board from "./board";
 
 const difficultyOptions = [
@@ -27,11 +28,18 @@ const Game = () => {
   value: 350
  });
 
- const { snake, fruit, gameOver, pause, points, directionRef } =
-  useGameLogic({
-   boardSizeValue: boardSize.value,
-   snakeSpeedValue: snakeSpeed.value
-  });
+ const {
+  snake,
+  fruit,
+  gameOver,
+  gameFinished,
+  pause,
+  points,
+  directionRef
+ } = useGameLogic({
+  boardSizeValue: boardSize.value,
+  snakeSpeedValue: snakeSpeed.value
+ });
 
  const changeBoardSize = (label: string, value: number) =>
   setBoardSize({ label, value });
@@ -42,14 +50,18 @@ const Game = () => {
   <div className="flex flex-col items-center shadow-[0_0_200px_#00000080] rounded-xl">
    <div className="flex justify-between items-center w-full p-2 relative">
     <DropDownList
-     gameResumed={!!(directionRef.current || pause || gameOver)}
+     gameResumed={
+      !(directionRef.current || pause || gameOver || gameFinished)
+     }
      currentOption={snakeSpeed.label}
      options={difficultyOptions}
      changeOption={changeDifficulty}
     />
     <div className="text-white text-3xl font-bold">{points}</div>
     <DropDownList
-     gameResumed={!!(directionRef.current || pause || gameOver)}
+     gameResumed={
+      !(directionRef.current || pause || gameOver || gameFinished)
+     }
      currentOption={boardSize.label}
      options={boardSizes}
      changeOption={changeBoardSize}
@@ -57,7 +69,8 @@ const Game = () => {
    </div>
    <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900 rounded-md overflow-hidden">
     {gameOver && <GameOver />}
-    {pause && !gameOver && <GamePaused />}
+    {gameFinished && <GameFinished />}
+    {pause && !gameOver && !gameFinished && <GamePaused />}
     <Board
      boardSize={boardSize.value}
      snake={snake}
