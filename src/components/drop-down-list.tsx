@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 interface DropDownListProps {
@@ -15,6 +15,27 @@ const DropDownList = ({
  changeOption
 }: DropDownListProps) => {
  const [shown, setShown] = useState(false);
+ const dropdownRef = useRef<HTMLDivElement>(null);
+
+ useEffect(() => {
+  setShown(false);
+ }, [gameResumed]);
+
+ useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+   if (
+    dropdownRef.current &&
+    !dropdownRef.current.contains(event.target as Node)
+   ) {
+    setShown(false);
+   }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+   document.removeEventListener("mousedown", handleClickOutside);
+  };
+ }, []);
 
  const handleShowOptions = () => {
   if (gameResumed) return;
@@ -23,10 +44,11 @@ const DropDownList = ({
 
  return (
   <div
+   ref={dropdownRef}
    tabIndex={1}
    onClick={handleShowOptions}
    className={twMerge(
-    "relative text-white font-bold cursor-pointer",
+    "relative text-white font-bold cursor-pointer focus-visible:outline-none",
     gameResumed && "cursor-not-allowed text-gray-400"
    )}
   >
@@ -47,6 +69,7 @@ const DropDownList = ({
    >
     {options.map((option) => (
      <button
+      key={option.value}
       onClick={() => changeOption(option.label, option.value)}
       className="w-full p-2 bg-black/50 hover:bg-black/70"
      >
