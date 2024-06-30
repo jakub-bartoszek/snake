@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { MdOutlineSpaceBar } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 import DropDownList from "./drop-down-list";
 import GamePaused from "./game-paused";
+import GameOver from "./game-over";
 
 interface Fruit {
  x: number;
@@ -250,17 +250,7 @@ const Game = () => {
     />
    </div>
    <div className="relative bg-gradient-to-tl from-cyan-400 via-indigo-600 to-rose-900 rounded-md overflow-hidden">
-    {gameOver && (
-     <div className="absolute w-full h-full bg-black/60 flex flex-col items-center justify-evenly text-white">
-      <h1 className="text-3xl font-bold">Game Over!</h1>
-      <div className="flex flex-col gap-2 items-center">
-       <div className="border-2 border-white h-10 w-32 rounded-xl">
-        <MdOutlineSpaceBar className="w-full h-full" />
-       </div>
-       Press spacebar to resume
-      </div>
-     </div>
-    )}
+    {gameOver && <GameOver />}
     {pause && !gameOver && <GamePaused />}
     {Array.from({ length: boardSize.value }).map((_, row) => (
      <div
