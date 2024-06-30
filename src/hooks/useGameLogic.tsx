@@ -32,9 +32,10 @@ const useGameLogic = ({
  const [gameOver, setGameOver] = useState(false);
  const [pause, setPause] = useState(false);
  const [points, setPoints] = useState(0);
- const [pending, setPending] = useState(false);
+ const directionQueue = useRef<string[]>([]);
  const directionRef = useRef<string | null>(null);
- const intervalRef = useRef<NodeJS.Timeout | null>(null);
+ const animationFrameRef = useRef<number | null>(null);
+ const lastMoveTimeRef = useRef<number>(0);
 
  useEffect(() => {
   setSnake([
@@ -65,7 +66,14 @@ const useGameLogic = ({
   setSnake((prevSnake) => {
    const newSnake = [...prevSnake];
    const head = { ...newSnake[0] };
-   const currentDirection = directionRef.current;
+   const currentDirection = directionQueue.current.length
+    ? directionQueue.current.shift()
+    : directionRef.current;
+
+   if (!currentDirection) return prevSnake;
+
+   directionRef.current = currentDirection;
+
    switch (currentDirection) {
     case "up":
      head.y -= 1;
@@ -98,23 +106,40 @@ const useGameLogic = ({
 
    newSnake.unshift(head);
    newSnake.pop();
-   setPending(false);
    return newSnake;
   });
  }, [boardSizeValue]);
 
+ const gameLoop = useCallback(
+  (timestamp: number) => {
+   if (!lastMoveTimeRef.current) lastMoveTimeRef.current = timestamp;
+   const timeElapsed = timestamp - lastMoveTimeRef.current;
+
+   if (timeElapsed > snakeSpeedValue) {
+    moveSnake();
+    lastMoveTimeRef.current = timestamp;
+   }
+
+   if (!gameOver && !pause) {
+    animationFrameRef.current = requestAnimationFrame(gameLoop);
+   }
+  },
+  [moveSnake, snakeSpeedValue, gameOver, pause]
+ );
+
  useEffect(() => {
   if (!gameOver && !pause) {
-   intervalRef.current = setInterval(moveSnake, snakeSpeedValue);
-   return () => {
-    if (intervalRef.current !== null) {
-     clearInterval(intervalRef.current);
-    }
-   };
-  } else if (pause && intervalRef.current !== null) {
-   clearInterval(intervalRef.current);
+   animationFrameRef.current = requestAnimationFrame(gameLoop);
+  } else if (animationFrameRef.current) {
+   cancelAnimationFrame(animationFrameRef.current);
   }
- }, [gameOver, pause, moveSnake, snakeSpeedValue]);
+
+  return () => {
+   if (animationFrameRef.current) {
+    cancelAnimationFrame(animationFrameRef.current);
+   }
+  };
+ }, [gameOver, pause, gameLoop]);
 
  const handleKeyDown = useCallback(
   (event: any) => {
@@ -122,21 +147,34 @@ const useGameLogic = ({
     setPause((prevPause) => !prevPause);
     return;
    }
+
+   const currentDirection = directionRef.current;
+   const newDirection = event.key.slice(5).toLowerCase();
+
    if (
-    ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
-     event.key
-    ) &&
-    !gameOver
+    gameOver ||
+    !["up", "down", "left", "right"].includes(newDirection)
    ) {
-    if (pause) {
-     setPause(false);
+    if (event.key === " ") {
+     if (gameOver) restartGame();
     }
-    setPending(true);
-    directionRef.current = event.key.slice(5).toLowerCase();
+    return;
    }
-   if (event.key === " ") {
-    if (gameOver) restartGame();
+
+   if (
+    (currentDirection === "up" && newDirection === "down") ||
+    (currentDirection === "down" && newDirection === "up") ||
+    (currentDirection === "left" && newDirection === "right") ||
+    (currentDirection === "right" && newDirection === "left")
+   ) {
+    return;
    }
+
+   if (pause) {
+    setPause(false);
+   }
+
+   directionQueue.current.push(newDirection);
   },
   [gameOver, pause]
  );
@@ -157,8 +195,9 @@ const useGameLogic = ({
   setFruit(generateFruit(boardSizeValue, snake));
   setPoints(0);
   directionRef.current = null;
-  if (intervalRef.current !== null) {
-   clearInterval(intervalRef.current);
+  directionQueue.current = [];
+  if (animationFrameRef.current) {
+   cancelAnimationFrame(animationFrameRef.current);
   }
   setPause(false);
  }, [boardSizeValue, snake]);

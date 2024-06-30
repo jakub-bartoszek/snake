@@ -1,4 +1,5 @@
 import { twMerge } from "tailwind-merge";
+import { memo } from "react";
 import { Fruit, Snake } from "../hooks/useGameLogic";
 
 interface BoardProps {
@@ -45,4 +46,4 @@ const Board = ({ boardSize, snake, fruit }: BoardProps) => (
  </>
 );
 
-export default Board;
+export default memo(Board);
