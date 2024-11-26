@@ -17,7 +17,7 @@ App live here: [jakub-bartoszek.github.io/snake-game](https://jakub-bartoszek.gi
 
    ```
    git clone https://github.com/jakub-bartoszek/snake-game.git
-   cd snake
+   cd snake-game
    ```
 
 2. Install dependencies:
