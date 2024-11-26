@@ -1,8 +1,8 @@
 {
- "name": "snake",
+ "name": "snake-game",
  "version": "0.1.0",
  "private": true,
- "homepage": "https://jakub-bartoszek.github.io/snake/",
+ "homepage": "https://jakub-bartoszek.github.io/snake-game/",
  "dependencies": {
   "@testing-library/jest-dom": "^5.17.0",
   "@testing-library/react": "^13.4.0",
