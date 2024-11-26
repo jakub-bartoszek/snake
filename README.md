@@ -1,7 +1,7 @@
 # Snake
 A snake game made with typescript.
 
-App live here: [jakub-bartoszek.github.io/Snake](https://jakub-bartoszek.github.io/snake-game)
+App live here: [jakub-bartoszek.github.io/snake-game](https://jakub-bartoszek.github.io/snake-game)
 
 ## Table of Contents
 - [Installation](#instalation)
