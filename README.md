@@ -1,7 +1,7 @@
 # Snake
 A snake game made with typescript.
 
-App live here: [jakub-bartoszek.github.io/Snake](https://jakub-bartoszek.github.io/Snake)
+App live here: [jakub-bartoszek.github.io/Snake](https://jakub-bartoszek.github.io/snake-game)
 
 ## Table of Contents
 - [Installation](#instalation)
@@ -13,7 +13,7 @@ App live here: [jakub-bartoszek.github.io/Snake](https://jakub-bartoszek.github.
 1. Clone the repository:
 
     ```
-    git clone https://github.com/jakub-bartoszek/snake.git
+    git clone https://github.com/jakub-bartoszek/snake-game.git
     cd snake
     ```
 2. Install dependencies:
