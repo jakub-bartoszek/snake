@@ -2,7 +2,7 @@
 
 A snake game made with typescript.
 
-App live here: [jakub-bartoszek.github.io/snake-game](https://jakub-bartoszek.github.io/snake-game)
+[App is live here.](https://jakub-bartoszek.github.io/snake-game)
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ App live here: [jakub-bartoszek.github.io/snake-game](https://jakub-bartoszek.gi
    ```
    npm install
    ```
-3. Run the development server:
+3. Run the app:
    ```
    npm start
    ```
@@ -48,6 +48,6 @@ App live here: [jakub-bartoszek.github.io/snake-game](https://jakub-bartoszek.gi
 
 For issues, questions, or suggestions, please open an issue in the repository or contact:
 
-Email: jakub.bartoszek.dev@gmail.com
-
-GitHub: [jakub-bartoszek](https://github.com/jakub-bartoszek)
+- Email: jakub.bartoszek.dev@gmail.com
+- Linkedin: [jbartoszek-dev](https://www.linkedin.com/in/jbartoszek-dev)
+- GitHub: [jakub-bartoszek](https://github.com/jakub-bartoszek)
