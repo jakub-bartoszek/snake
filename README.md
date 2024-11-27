@@ -6,7 +6,7 @@ A snake game made with typescript.
 
 ## Table of Contents
 
-- [Installation](#instalation)
+- [Instalation](#instalation)
 - [Features](#features)
 - [Technologies used](#technologies-used)
 - [Contact](#contact)
